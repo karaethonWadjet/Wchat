@@ -1,7 +1,5 @@
 package wchat;
 
-
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -28,9 +26,10 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final int port = 69;
+	private static final int port = 6112;
 	private JTextField entry = new JTextField(20);
 	private JTextArea messages = new JTextArea(20, 30);
+	//private JTextArea users = new JTextArea(10,10);
 	private Scanner in;
 	private PrintWriter out;
 
@@ -40,7 +39,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	}
 
 	public void launch(String n, String i) {
-		
+
 		try {
 			@SuppressWarnings("resource")
 			Socket jeeves = new Socket(i, port);
@@ -54,9 +53,9 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			JOptionPane.showMessageDialog(this, "IO Exception thrown :(");
 			System.exit(0);
 		}
-		
+
 		// Set up the window
-		Action sendo = new AbstractAction(){
+		Action sendo = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -84,7 +83,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		add(log);
 
 		setBounds(400, 200, 640, 480);
-		//pack();
+		// pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		new Thread(this).start();
@@ -98,7 +97,15 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	public void run() {
 		messages.append(in.nextLine());
 		while (in.hasNext()) {
-			messages.append("\n" + in.nextLine());
+			String t = in.nextLine();
+			if (!t.contains(":")) {
+				//it's a server command
+				
+			} else {
+				//it's a message, print it out
+				messages.append("\n" + t);
+			}
+			messages.setCaretPosition(messages.getDocument().getLength());
 		}
 		messages.append("\n" + "Server is kill :(");
 	}

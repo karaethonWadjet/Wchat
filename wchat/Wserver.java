@@ -15,7 +15,7 @@ public class Wserver implements Runnable {
 	private int count = 0;
 
 	public Wserver() {
-		final int port = 69;
+		final int port = 6112;
 		try {
 			lisna = new ServerSocket(port);
 			new Thread(this).start();
@@ -42,6 +42,7 @@ public class Wserver implements Runnable {
 	public void disconnect(int id) {
 		po.get(id).close();
 		po.remove(id);
+		System.out.println("Some guy dc'd");
 	}
 
 	public static void main(String[] args) {
