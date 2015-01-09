@@ -11,8 +11,10 @@ import javax.swing.JOptionPane;
 
 public class Wserver implements Runnable {
 	private HashMap<Integer, PrintWriter> po = new HashMap<Integer, PrintWriter>();
+	private HashMap<Integer, Wservreader> readers = new HashMap<Integer, Wservreader>();
 	private ServerSocket lisna;
 	private int count = 0;
+	private final String connect = "/5%3&";
 
 	public Wserver() {
 		final int port = 6112;
@@ -21,12 +23,18 @@ public class Wserver implements Runnable {
 			new Thread(this).start();
 			while (true) {
 				Socket s = lisna.accept();
-				System.out.println("Received connection from "
-						+ s.getInetAddress());
 				po.put(count, new PrintWriter(s.getOutputStream(), true));
-				new Thread(new Wservreader(this,
-						new Scanner(s.getInputStream()), count)).start();
+				for (Wservreader w : readers.values()){
+					po.get(count).println(connect + w.name());
+				}
+				readers.put(count,
+						new Wservreader(this, new Scanner(s.getInputStream()),
+								count));
+				new Thread(readers.get(count)).start();
+				System.out.println(readers.get(count).name() + " connected from "
+						+ s.getInetAddress());
 				count++;
+			
 			}
 		} catch (IOException e) {
 		}
@@ -34,15 +42,16 @@ public class Wserver implements Runnable {
 	}
 
 	public void broadcast(String s) {
-		for (PrintWriter p : po.values()){
+		for (PrintWriter p : po.values()) {
 			p.println(s);
 		}
 	}
 
-	public void disconnect(int id) {
+	public void disconnect(int id, String name) {
 		po.get(id).close();
 		po.remove(id);
-		System.out.println("Some guy dc'd");
+		readers.remove(id);
+		System.out.println(name + " disconnected");
 	}
 
 	public static void main(String[] args) {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.AbstractAction;
@@ -27,11 +28,14 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int port = 6112;
+	private final String connect = "/5%3&";
+	private final String disconnect = "^*";
 	private JTextField entry = new JTextField(20);
 	private JTextArea messages = new JTextArea(20, 30);
-	//private JTextArea users = new JTextArea(10,10);
+	private JTextArea users = new JTextArea(2, 10);
 	private Scanner in;
 	private PrintWriter out;
+	private ArrayList<String> names = new ArrayList<String>();
 
 	public Wclient() {
 		super("Dubya Chat Pro!");
@@ -69,6 +73,8 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		entry.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "send");
 		entry.getActionMap().put("send", sendo);
 		messages.setEditable(false);
+		messages.setText("");
+		users.setEditable(false);
 		JPanel log = new JPanel();
 		JPanel chat = new JPanel();
 		JLabel sign = new JLabel("You are signed in as: " + n);
@@ -80,6 +86,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		log.add(sign);
 		log.add(new JScrollPane(messages));
 		log.add(chat);
+		log.add(users);
 		add(log);
 
 		setBounds(400, 200, 640, 480);
@@ -95,14 +102,25 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 	@Override
 	public void run() {
-		messages.append(in.nextLine());
 		while (in.hasNext()) {
 			String t = in.nextLine();
 			if (!t.contains(":")) {
-				//it's a server command
-				
+				// it's a server command
+				if (t.contains(connect)) {
+					names.add(t.substring(connect.length()));
+					users.setText("Currently on the server: " + names.toString());
+				} else if (t.contains(disconnect)) {
+					names.remove(t.substring(disconnect.length()));
+					users.setText("Currently on the server: " + names.toString());
+				} else if (t.contains(".")){
+					if (messages.getText().length() > 10){
+						messages.append("\n");
+						System.out.println("The length is:" + messages.getText().length());
+					}
+					messages.append(t);
+				}
 			} else {
-				//it's a message, print it out
+				// it's a message, print it out
 				messages.append("\n" + t);
 			}
 			messages.setCaretPosition(messages.getDocument().getLength());
