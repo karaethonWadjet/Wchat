@@ -21,6 +21,7 @@ public class Wserver implements Runnable {
 		try {
 			lisna = new ServerSocket(port);
 			new Thread(this).start();
+			System.out.println("Battlecruiser Operational");
 			while (true) {
 				Socket s = lisna.accept();
 				po.put(count, new PrintWriter(s.getOutputStream(), true));
@@ -66,6 +67,7 @@ public class Wserver implements Runnable {
 				new Object[] { "Yes", "No" }, null)) {
 			System.out.println("running!");
 		}
+		System.out.println("Abandon sheep!");
 		System.exit(0);
 	}
 
