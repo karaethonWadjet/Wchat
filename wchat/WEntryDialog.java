@@ -57,8 +57,6 @@ public class WEntryDialog extends JFrame implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				parent.launch(name.getText(), ip.getText());
-
-				setVisible(false);
 			}
 		};
 		ip.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "send");
@@ -71,10 +69,13 @@ public class WEntryDialog extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 
+	public void clear(){
+		ip.setText("");
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent a) {
 			parent.launch(name.getText(), ip.getText());
-			setVisible(false);
 	}
 
 }

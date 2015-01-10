@@ -14,32 +14,18 @@ public class Wserver implements Runnable {
 	private HashMap<Integer, Wservreader> readers = new HashMap<Integer, Wservreader>();
 	private ServerSocket lisna;
 	private int count = 0;
-	private final String connect = "/5%3&";
 
 	public Wserver() {
-		final int port = 6112;
-		try {
-			lisna = new ServerSocket(port);
-			new Thread(this).start();
-			System.out.println("Battlecruiser Operational");
-			while (true) {
-				Socket s = lisna.accept();
-				po.put(count, new PrintWriter(s.getOutputStream(), true));
-				for (Wservreader w : readers.values()){
-					po.get(count).println(connect + w.name());
-				}
-				readers.put(count,
-						new Wservreader(this, new Scanner(s.getInputStream()),
-								count));
-				new Thread(readers.get(count)).start();
-				System.out.println(readers.get(count).name() + " connected from "
-						+ s.getInetAddress());
-				count++;
-			
-			}
-		} catch (IOException e) {
+		new Thread(this).start();
+		while (JOptionPane.YES_OPTION != JOptionPane.showOptionDialog(null,
+				"Close the server?", "Server running...",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+				new Object[] { "Yes", "No" }, null)) {
+			//new Wclient("coriasis", "127.0.0.1");
+			System.out.println("running!");
 		}
-
+		System.out.println("Abandon sheep!");
+		System.exit(0);
 	}
 
 	public void broadcast(String s) {
@@ -61,14 +47,26 @@ public class Wserver implements Runnable {
 
 	@Override
 	public void run() {
-		while (JOptionPane.YES_OPTION != JOptionPane.showOptionDialog(null,
-				"Close the server?", "Server running...",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-				new Object[] { "Yes", "No" }, null)) {
-			System.out.println("running!");
+		final int port = 6112;
+		try {
+			lisna = new ServerSocket(port);
+			System.out.println("Battlecruiser Operational");
+			while (true) {
+				Socket s = lisna.accept();
+				po.put(count, new PrintWriter(s.getOutputStream(), true));
+				for (Wservreader w : readers.values()){
+					po.get(count).println((w.afk() ? Wclient.afk : Wclient.initcon) + w.name());
+				}
+				readers.put(count,
+						new Wservreader(this, new Scanner(s.getInputStream()),
+								count));
+				new Thread(readers.get(count)).start();
+				System.out.println(readers.get(count).name() + " connected from "
+						+ s.getInetAddress());
+				count++;
+			}
+		} catch (IOException e) {
 		}
-		System.out.println("Abandon sheep!");
-		System.exit(0);
 	}
 
 }

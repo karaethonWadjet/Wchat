@@ -7,12 +7,9 @@ public class Wservreader implements Runnable {
 	private Scanner input;
 	private String name;
 	private int id;
-	private final String connect = "/5%3&";
-	private final String disconnect = "^*";
-	private final String afk = "&#$";
-	private final String back = "$#&";
 	private boolean online = true;
 	private int time = 0;
+	private boolean pres = false;
 
 	public Wservreader(Wserver p, Scanner s, int i) {
 		parent = p;
@@ -30,7 +27,8 @@ public class Wservreader implements Runnable {
 						e.printStackTrace();
 					}
 					if (time > 5) {
-						parent.broadcast(afk + name);
+						pres = true;
+						parent.broadcast(Wclient.afk + name);
 					}
 				}
 			}
@@ -38,23 +36,27 @@ public class Wservreader implements Runnable {
 
 	}
 
+	public boolean afk(){
+		return pres;
+	}
 	public String name() {
 		return name;
 	}
 
 	@Override
 	public void run() {
-		parent.broadcast(connect + name);
+		parent.broadcast(Wclient.connect + name);
 		parent.broadcast(name + " has connected.");
 		while (input.hasNext()) {
 			parent.broadcast(name + ": " + input.nextLine());
+			pres = false;
 			time = 0;
-			parent.broadcast(back + name);
+			parent.broadcast(Wclient.back + name);
 		}
 		online = false;
 		parent.broadcast(name + " has disconnected.");
 		input.close();
-		parent.broadcast(disconnect + name);
+		parent.broadcast(Wclient.disconnect + name);
 		parent.disconnect(id, name);
 	}
 
