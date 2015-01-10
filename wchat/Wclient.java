@@ -140,6 +140,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 					names.remove(t.substring(disconnect.length()));
 					users.setText("Currently on the server: "
 							+ names.toString());
+					play("logout.wav");
 				} else if (t.contains(afk)
 						&& names.contains(t.substring(afk.length()))) {
 					names.set(names.indexOf(t.substring(afk.length())),
