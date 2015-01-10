@@ -24,14 +24,12 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -49,8 +47,8 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField entry = new JTextField(40);
-	private JTextArea messages = new JTextArea(21, 40),
-			users = new JTextArea(21, 10);
+	private JTextArea messages = new JTextArea(21, 40), users = new JTextArea(
+			21, 10);
 	private Scanner in;
 	private PrintWriter out;
 	private ArrayList<String> names = new ArrayList<String>();
@@ -115,10 +113,10 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			messages.setLineWrap(true);
 			users.setEditable(false);
 			TitledBorder t = BorderFactory.createTitledBorder(
-					BorderFactory.createLineBorder(Color.black),
+					BorderFactory.createLineBorder(Color.RED),
 					"Currently Online");
 			t.setTitleJustification(TitledBorder.CENTER);
-			//users.setBorder(t);
+			// users.setBorder(t);
 
 			// Commence building window
 			JMenuBar hey = new JMenuBar();
@@ -146,19 +144,20 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			chat.add(sen);
 
 			userlist.setLayout(new BoxLayout(userlist, BoxLayout.Y_AXIS));
-			userlist.add(new JLabel("Currently Online"));
 			userlist.add(users);
+			userlist.setBorder(t);
 
 			areas.setLayout(new BoxLayout(areas, BoxLayout.X_AXIS));
 			areas.add(Box.createHorizontalStrut(5));
 			areas.add(new JScrollPane(messages));
 			areas.add(Box.createHorizontalStrut(5));
-			areas.add(new JSeparator(JSeparator.VERTICAL));
-			areas.add(Box.createHorizontalStrut(5));
+			// areas.add(new JSeparator(JSeparator.VERTICAL));
+			// areas.add(Box.createHorizontalStrut(5));
 			areas.add(userlist);
+			areas.add(Box.createHorizontalStrut(5));
 
 			whole.setLayout(new BoxLayout(whole, BoxLayout.Y_AXIS));
-			whole.add(Box.createVerticalStrut(5));
+			whole.add(Box.createVerticalStrut(10));
 			whole.add(areas);
 			whole.add(chat);
 			add(whole);
@@ -194,12 +193,9 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 	private void updatelist() {
 		users.setText("");
-		System.out.println("clear!");
 		for (String b : names) {
-			System.out.println("iterable!");
 			users.append(b + "\n");
 		}
-		System.out.println("ole!");
 	}
 
 	public static void main(String[] args) {
@@ -269,12 +265,14 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	public void actionPerformed(ActionEvent a) {
 		switch (a.getActionCommand()) {
 		case "dc":
-			connected = false;
-			out.close();
-			in.close();
-			names.clear();
-			updatelist();
-			rec.setEnabled(true);
+			if (connected) {
+				connected = false;
+				out.close();
+				in.close();
+				names.clear();
+				updatelist();
+				rec.setEnabled(true);
+			}
 			break;
 		case "rc":
 			pop.setVisible(true);
