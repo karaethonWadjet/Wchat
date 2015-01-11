@@ -207,45 +207,38 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		play("login.wav");
 		while (in.hasNext()) {
 			String t = in.nextLine();
-			if (!t.contains(":")) { // it's a server command
+			if (!t.contains(":") && !t.contains("[")) { // it's a server command
 				if (t.contains(initcon)) {
 					names.add(t.substring(initcon.length()));
-					updatelist();
 				} else if (t.contains(connect)) {
 					names.add(t.substring(connect.length()));
-					updatelist();
 					if (!t.substring(connect.length()).equals(name)) {
 						play("connect.wav");
 					}
 				} else if (t.contains(disconnect)) {
-					System.out.println("check key");
 					names.remove(t.substring(disconnect.length()));
 					names.remove(t.substring(disconnect.length()) + "(AFK)");
-					updatelist();
 					play("logout.wav");
 				} else if (t.contains(afk)
 						&& names.contains(t.substring(afk.length()))) {
 					names.set(names.indexOf(t.substring(afk.length())),
 							t.substring(afk.length()) + "(AFK)");
-					updatelist();
 				} else if (t.contains(back)
 						&& names.contains(t.substring(back.length()) + "(AFK)")) {
 					names.set(
 							names.indexOf(t.substring(back.length()) + "(AFK)"),
 							t.substring(back.length()));
-					updatelist();
-				} else if (t.contains(".")) {
-					if (messages.getText().length() > 10) {
-						messages.append("\n");
-						// System.out.println("The length is:" +
-						// messages.getText().length());
-					}
-					messages.append(t);
 				}
+				updatelist();
 			} else {
 				// it's a message, print it out
-				messages.append("\n" + t);
-				if (!t.contains(name + ":") && !entry.isFocusOwner()) {
+				if (messages.getText().length() > 10) {
+					messages.append("\n");
+					// System.out.println("The length is:" +
+					// messages.getText().length());
+				}
+				messages.append(t);
+				if (!t.contains("[") && !t.contains(name + ":") && !entry.isFocusOwner()) {
 					play("note.wav");
 				}
 			}
@@ -253,6 +246,8 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		}
 		if (connected) {
 			messages.append("\n" + "Server is kill :(");
+			names.clear();
+			updatelist();
 			connected = false;
 			rec.setEnabled(true);
 		} else {

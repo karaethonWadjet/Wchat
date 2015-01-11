@@ -46,7 +46,7 @@ public class Wservreader implements Runnable {
 	@Override
 	public void run() {
 		parent.broadcast(Wclient.connect + name);
-		parent.broadcast(name + " has connected.");
+		parent.broadcast("[" + name + " has connected]");
 		while (input.hasNext()) {
 			parent.broadcast(name + ": " + input.nextLine());
 			pres = false;
@@ -54,7 +54,7 @@ public class Wservreader implements Runnable {
 			parent.broadcast(Wclient.back + name);
 		}
 		online = false;
-		parent.broadcast(name + " has disconnected.");
+		parent.broadcast("[" + name + " has disconnected]");
 		input.close();
 		parent.broadcast(Wclient.disconnect + name);
 		parent.disconnect(id, name);
