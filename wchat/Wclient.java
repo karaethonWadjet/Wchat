@@ -1,6 +1,7 @@
 package wchat;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -32,23 +33,26 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 public class Wclient extends JFrame implements ActionListener, Runnable {
 	/* these string prefixes denote server commands to update the user list */
-	static final String connect = "{5%3&"; // new user connect
-	static final String disconnect = "6^*T"; // user disconnects
-	static final String afk = "&#$";
-	static final String back = "$#&";
-	static final String initcon = "(5%3&"; // initial user list
+	static final String connect = "{5%3&", // new user connect
+			disconnect = "6^*T", // user disconnects
+			afk = "&#$", back = "$#&", initcon = "(5%3&"; // initial user list
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField entry = new JTextField(40);
-	private JTextArea messages = new JTextArea(21, 40), users = new JTextArea(
-			21, 10);
+	private JTextArea users = new JTextArea(21, 10);
+	private JTextPane crese = new JTextPane();
 	private Scanner in;
 	private PrintWriter out;
 	private ArrayList<String> names = new ArrayList<String>();
@@ -57,6 +61,8 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	private Thread inbound;
 	private boolean connected = false, muted = false;
 	private JMenuItem rec = new JMenuItem("Reconnect");
+	private AbstractDocument mesdoc;
+	private SimpleAttributeSet univ = new SimpleAttributeSet();
 
 	public Wclient() {
 		setVisible(false);
@@ -88,11 +94,10 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			return;
 		}
 		connected = true;
+		// Close entry dialog and disable reconnect button
 		rec.setEnabled(false);
-		// Close entry dialog
 		pop.setVisible(false);
 
-		setTitle("Dubya Chat Pro! - Starring: " + name);
 		if (!isVisible()) {
 			// Keybinding and other text area prep
 			Action sendo = new AbstractAction() {
@@ -108,15 +113,14 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			};
 			entry.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "send");
 			entry.getActionMap().put("send", sendo);
-			messages.setEditable(false);
-			// messages.setText("");
-			messages.setLineWrap(true);
+			crese.setEditable(false);
+			mesdoc = (AbstractDocument) crese.getStyledDocument();
 			users.setEditable(false);
 			TitledBorder t = BorderFactory.createTitledBorder(
 					BorderFactory.createLineBorder(Color.RED),
 					"Currently Online");
 			t.setTitleJustification(TitledBorder.CENTER);
-			// users.setBorder(t);
+			StyleConstants.setForeground(univ, Color.BLACK);
 
 			// Commence building window
 			JMenuBar hey = new JMenuBar();
@@ -149,7 +153,9 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 			areas.setLayout(new BoxLayout(areas, BoxLayout.X_AXIS));
 			areas.add(Box.createHorizontalStrut(5));
-			areas.add(new JScrollPane(messages));
+			JScrollPane jaefw = new JScrollPane(crese);
+			jaefw.setPreferredSize(new Dimension(450, 360));
+			areas.add(jaefw);
 			areas.add(Box.createHorizontalStrut(5));
 			// areas.add(new JSeparator(JSeparator.VERTICAL));
 			// areas.add(Box.createHorizontalStrut(5));
@@ -166,13 +172,14 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			pack();
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			setVisible(true);
-
 		}
+		setTitle("Dubya Chat Pro! - Starring: " + name);
 		inbound = new Thread(this);
 		inbound.start();
 	}
 
-	public void play(String s) {
+	// plays a sound file denoted by s
+	private void play(String s) {
 		if (!muted) {
 			try {
 				AudioInputStream as = AudioSystem.getAudioInputStream(new File(
@@ -191,10 +198,31 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		}
 	}
 
+	// updates the list of currently online people
 	private void updatelist() {
 		users.setText("");
 		for (String b : names) {
 			users.append(b + "\n");
+		}
+	}
+
+	private void print(String s) {
+		try {
+			if (s.contains(":")) {
+				int it = 0;
+				StyleConstants.setBold(univ, true);
+				while (s.charAt(it) != ':') {
+					mesdoc.insertString(mesdoc.getLength(), s.charAt(it) + "",
+							univ);
+					it++;
+				}
+				StyleConstants.setBold(univ, false);
+				mesdoc.insertString(mesdoc.getLength(), s.substring(it), univ);
+			} else {
+				mesdoc.insertString(mesdoc.getLength(), s, univ);
+			}
+		} catch (BadLocationException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -216,9 +244,10 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 						play("connect.wav");
 					}
 				} else if (t.contains(disconnect)) {
+					play("logout.wav");
 					names.remove(t.substring(disconnect.length()));
 					names.remove(t.substring(disconnect.length()) + "(AFK)");
-					play("logout.wav");
+
 				} else if (t.contains(afk)
 						&& names.contains(t.substring(afk.length()))) {
 					names.set(names.indexOf(t.substring(afk.length())),
@@ -232,28 +261,28 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 				updatelist();
 			} else {
 				// it's a message, print it out
-				if (messages.getText().length() > 10) {
-					messages.append("\n");
-					// System.out.println("The length is:" +
-					// messages.getText().length());
+				if (mesdoc.getLength() > 10) {
+					print("\n");
 				}
-				messages.append(t);
-				if (!t.contains("[") && !t.contains(name + ":") && !entry.isFocusOwner()) {
+				print(t);
+				if (!t.contains("[") && !t.contains(name + ":")
+						&& !entry.isFocusOwner()) {
 					play("note.wav");
 				}
 			}
-			messages.setCaretPosition(messages.getDocument().getLength());
+			// scroll to bottom
+			crese.setCaretPosition(mesdoc.getLength());
 		}
 		if (connected) {
-			messages.append("\n" + "Server is kill :(");
+			print("\n" + "Server is kill :(");
 			names.clear();
 			updatelist();
 			connected = false;
 			rec.setEnabled(true);
 		} else {
-			messages.append("\n" + "You are now disconnected.");
+			print("\n" + "[You are now disconnected]");
 		}
-		messages.setCaretPosition(messages.getDocument().getLength());
+		crese.setCaretPosition(mesdoc.getLength());
 	}
 
 	@Override
