@@ -26,7 +26,7 @@ public class Wservreader implements Runnable {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					if (time > 5) {
+					if (time > 5 && !pres) {
 						pres = true;
 						parent.broadcast(Wclient.afk + name);
 					}
@@ -36,9 +36,10 @@ public class Wservreader implements Runnable {
 
 	}
 
-	public boolean afk(){
+	public boolean afk() {
 		return pres;
 	}
+
 	public String name() {
 		return name;
 	}
@@ -49,9 +50,11 @@ public class Wservreader implements Runnable {
 		parent.broadcast("[" + name + " has connected]");
 		while (input.hasNext()) {
 			parent.broadcast(name + ": " + input.nextLine());
-			pres = false;
 			time = 0;
-			parent.broadcast(Wclient.back + name);
+			if (pres) {
+				pres = false;
+				parent.broadcast(Wclient.back + name);
+			}
 		}
 		online = false;
 		parent.broadcast("[" + name + " has disconnected]");

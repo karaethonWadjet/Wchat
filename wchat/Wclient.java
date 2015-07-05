@@ -68,7 +68,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		setVisible(false);
 		pop = new WEntryDialog(this);
 	}
-
+	//unused constructor for launching with a predetermined IP and username
 	public Wclient(String n, String i) {
 		pop = new WEntryDialog(this);
 		pop.setVisible(false);
@@ -124,20 +124,27 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 			// Commence building window
 			JMenuBar hey = new JMenuBar();
-			JMenu one = new JMenu("Net"), two = new JMenu("Options");
+			JMenu one = new JMenu("Net"), two = new JMenu("Options"), twee = new JMenu("Help");
 			rec.setActionCommand("rc");
 			rec.addActionListener(this);
 			JMenuItem dis = new JMenuItem("Disconnect"), mute = new JMenuItem(
-					"Mute/Unmute");
+					"Mute/Unmute"), halp = new JMenuItem("HALP"), about = new JMenuItem("About");
 			dis.setActionCommand("dc");
 			dis.addActionListener(this);
 			mute.setActionCommand("mute");
 			mute.addActionListener(this);
+			halp.setActionCommand("halp");
+			halp.addActionListener(this);
+			about.setActionCommand("about");
+			about.addActionListener(this);
 			one.add(rec);
 			one.add(dis);
 			two.add(mute);
+			twee.add(halp);
+			twee.add(about);
 			hey.add(one);
 			hey.add(two);
+			hey.add(twee);
 			setJMenuBar(hey);
 
 			JButton sen = new JButton("Sento!");
@@ -208,7 +215,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 	private void print(String s) {
 		try {
-			if (s.contains(":")) {
+			if (s.contains(":") && !s.contains("[")) {
 				int it = 0;
 				StyleConstants.setBold(univ, true);
 				while (s.charAt(it) != ':') {
@@ -259,8 +266,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 							t.substring(back.length()));
 				}
 				updatelist();
-			} else {
-				// it's a message, print it out
+			} else { // it's a message, print it out
 				if (mesdoc.getLength() > 10) {
 					print("\n");
 				}
@@ -274,7 +280,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			crese.setCaretPosition(mesdoc.getLength());
 		}
 		if (connected) {
-			print("\n" + "Server is kill :(");
+			print("\n" + "[Server is kill :(]");
 			names.clear();
 			updatelist();
 			connected = false;
@@ -305,6 +311,12 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			muted = !muted;
 			JOptionPane.showMessageDialog(this, "Sounds are now O"
 					+ (muted ? "FF" : "N"));
+			break;
+		case "halp":
+			JOptionPane.showMessageDialog(this, "If you don't know how to use a chat client, please get off the internet kthx ;)");
+			break;
+		case "about":
+			JOptionPane.showMessageDialog(this, "W Chat Client, Version 0.7 \n By Wayne Kueh");
 			break;
 		default: // from the sent button
 			if (entry.getText() != "") {

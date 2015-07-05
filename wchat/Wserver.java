@@ -18,7 +18,7 @@ public class Wserver implements Runnable {
 	public Wserver() {
 		new Thread(this).start();
 		while (JOptionPane.YES_OPTION != JOptionPane.showOptionDialog(null,
-				"Close the server?", "Server running...",
+				"Close the server?", "Chat Server running...",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 				new Object[] { "Yes", "No" }, null)) {
 			//new Wclient("coriasis", "127.0.0.1");
@@ -68,5 +68,4 @@ public class Wserver implements Runnable {
 		} catch (IOException e) {
 		}
 	}
-
 }

@@ -1,7 +1,5 @@
 package wchat;
 
-
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -77,5 +75,4 @@ public class WEntryDialog extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent a) {
 			parent.launch(name.getText(), ip.getText());
 	}
-
 }
