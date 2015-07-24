@@ -89,8 +89,12 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			JOptionPane.showMessageDialog(this, "NO server was found :O");
 			return;
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this,
-					"Server's down :(  Try again later?");
+			JOptionPane
+			.showMessageDialog(
+					this,
+					"Either server is kill or you have the wrong address.\nContact the server admin to make sure.",
+					"Can't find tha server!",
+					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		connected = true;
@@ -316,7 +320,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			JOptionPane.showMessageDialog(this, "If you don't know how to use a chat client, please get off the internet kthx ;)");
 			break;
 		case "about":
-			JOptionPane.showMessageDialog(this, "W Chat Client, Version 0.7 \n By Wayne Kueh");
+			JOptionPane.showMessageDialog(this, "W Chat Client, Version 0.8 \n By Wayne Kueh");
 			break;
 		default: // from the sent button
 			if (entry.getText() != "") {
