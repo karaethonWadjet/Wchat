@@ -49,7 +49,10 @@ public class Wservreader implements Runnable {
 		parent.broadcast(Wclient.connect + name);
 		parent.broadcast("[" + name + " has connected]");
 		while (input.hasNext()) {
-			parent.broadcast(name + ": " + input.nextLine());
+			String temp = input.nextLine();
+			if (!temp.equals("")) {
+				parent.broadcast(name + ": " + temp);
+			}
 			time = 0;
 			if (pres) {
 				pres = false;

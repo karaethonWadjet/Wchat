@@ -59,7 +59,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	private String name;
 	private WEntryDialog pop;
 	private Thread inbound;
-	private boolean connected = false, muted = false;
+	private boolean connected = false, muted = false, autoscroll = true;
 	private JMenuItem rec = new JMenuItem("Reconnect");
 	private AbstractDocument mesdoc;
 	private SimpleAttributeSet univ = new SimpleAttributeSet();
@@ -68,7 +68,8 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		setVisible(false);
 		pop = new WEntryDialog(this);
 	}
-	//unused constructor for launching with a predetermined IP and username
+
+	// unused constructor for launching with a predetermined IP and username
 	public Wclient(String n, String i) {
 		pop = new WEntryDialog(this);
 		pop.setVisible(false);
@@ -90,11 +91,11 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			return;
 		} catch (IOException e) {
 			JOptionPane
-			.showMessageDialog(
-					this,
-					"Either server is kill or you have the wrong address.\nContact the server admin to make sure.",
-					"Can't find tha server!",
-					JOptionPane.WARNING_MESSAGE);
+					.showMessageDialog(
+							this,
+							"Either server is kill or you have the wrong address.\nContact the server admin to make sure.",
+							"Can't find tha server!",
+							JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		connected = true;
@@ -104,6 +105,8 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 		if (!isVisible()) {
 			// Keybinding and other text area prep
+
+			// this action is called when the sent button or enter is pressed
 			Action sendo = new AbstractAction() {
 				private static final long serialVersionUID = 1L;
 
@@ -128,15 +131,19 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 			// Commence building window
 			JMenuBar hey = new JMenuBar();
-			JMenu one = new JMenu("Net"), two = new JMenu("Options"), twee = new JMenu("Help");
+			JMenu one = new JMenu("Net"), two = new JMenu("Options"), twee = new JMenu(
+					"Help");
 			rec.setActionCommand("rc");
 			rec.addActionListener(this);
 			JMenuItem dis = new JMenuItem("Disconnect"), mute = new JMenuItem(
-					"Mute/Unmute"), halp = new JMenuItem("HALP"), about = new JMenuItem("About");
+					"Mute/Unmute"), halp = new JMenuItem("HALP"), about = new JMenuItem(
+					"About"), scroll = new JMenuItem("Toggle Autoscroll");
 			dis.setActionCommand("dc");
 			dis.addActionListener(this);
 			mute.setActionCommand("mute");
 			mute.addActionListener(this);
+			scroll.setActionCommand("down");
+			scroll.addActionListener(this);
 			halp.setActionCommand("halp");
 			halp.addActionListener(this);
 			about.setActionCommand("about");
@@ -144,6 +151,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			one.add(rec);
 			one.add(dis);
 			two.add(mute);
+			two.add(scroll);
 			twee.add(halp);
 			twee.add(about);
 			hey.add(one);
@@ -152,7 +160,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			setJMenuBar(hey);
 
 			JButton sen = new JButton("Sento!");
-			sen.addActionListener(this);
+			sen.addActionListener(sendo);
 
 			JPanel whole = new JPanel(), chat = new JPanel(), areas = new JPanel(), userlist = new JPanel();
 			chat.add(entry);
@@ -281,7 +289,9 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 				}
 			}
 			// scroll to bottom
-			crese.setCaretPosition(mesdoc.getLength());
+			if (autoscroll) {
+				crese.setCaretPosition(mesdoc.getLength());
+			}
 		}
 		if (connected) {
 			print("\n" + "[Server is kill :(]");
@@ -317,16 +327,27 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 					+ (muted ? "FF" : "N"));
 			break;
 		case "halp":
-			JOptionPane.showMessageDialog(this, "If you don't know how to use a chat client, please get off the internet kthx ;)");
+			JOptionPane
+					.showMessageDialog(
+							this,
+							"If you don't know how to use a chat client, please get off the internet kthx ;)");
 			break;
 		case "about":
-			JOptionPane.showMessageDialog(this, "W Chat Client, Version 0.8 \n By Wayne Kueh");
+			JOptionPane.showMessageDialog(this,
+					"W Chat Client, Version 0.8 \n By Wayne Kueh",
+					"About this snazzy app", JOptionPane.INFORMATION_MESSAGE);
 			break;
-		default: // from the sent button
-			if (entry.getText() != "") {
-				out.println(entry.getText());
-				entry.setText("");
-			}
+		case "down":
+			autoscroll = !autoscroll;
+			JOptionPane
+					.showMessageDialog(
+							this,
+							"The chat window will "
+									+ (autoscroll ? "now" : "NOT")
+									+ " automatically scroll to the bottom if a new message is received.",
+							"Autoscroll is now O" + (autoscroll ? "N" : "FF"),
+							JOptionPane.INFORMATION_MESSAGE);
+			break;
 		}
 	}
 }
