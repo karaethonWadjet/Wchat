@@ -17,11 +17,12 @@ public class Wserver implements Runnable {
 
 	public Wserver() {
 		new Thread(this).start();
+		//new Wclient("coriasis", "127.0.0.1");
 		while (JOptionPane.YES_OPTION != JOptionPane.showOptionDialog(null,
-				"Close the server?", "Chat Server running...",
+				"Close the server?", "WChat Server running...",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 				new Object[] { "Yes", "No" }, null)) {
-			//new Wclient("coriasis", "127.0.0.1");
+			
 			System.out.println("running!");
 		}
 		System.out.println("Abandon sheep!");

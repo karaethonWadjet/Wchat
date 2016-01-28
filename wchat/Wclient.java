@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+//	WChat Version 0.8, BELIEVE IT!
 public class Wclient extends JFrame implements ActionListener, Runnable {
 	/* these string prefixes denote server commands to update the user list */
 	static final String connect = "{5%3&", // new user connect
@@ -63,6 +65,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 	private JMenuItem rec = new JMenuItem("Reconnect");
 	private AbstractDocument mesdoc;
 	private SimpleAttributeSet univ = new SimpleAttributeSet();
+	private Color bg = Color.RED;
 
 	public Wclient() {
 		setVisible(false);
@@ -89,7 +92,12 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 		} catch (UnknownHostException e) {
 			JOptionPane.showMessageDialog(this, "NO server was found :O");
 			return;
+
+		} catch (ConnectException e) {
+			e.printStackTrace();
+			return;
 		} catch (IOException e) {
+			e.printStackTrace();
 			JOptionPane
 					.showMessageDialog(
 							this,
@@ -124,8 +132,7 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 			mesdoc = (AbstractDocument) crese.getStyledDocument();
 			users.setEditable(false);
 			TitledBorder t = BorderFactory.createTitledBorder(
-					BorderFactory.createLineBorder(Color.RED),
-					"Currently Online");
+					BorderFactory.createLineBorder(bg), "Currently Online");
 			t.setTitleJustification(TitledBorder.CENTER);
 			StyleConstants.setForeground(univ, Color.BLACK);
 
@@ -238,7 +245,9 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 				StyleConstants.setBold(univ, false);
 				mesdoc.insertString(mesdoc.getLength(), s.substring(it), univ);
 			} else {
+				StyleConstants.setForeground(univ, bg);
 				mesdoc.insertString(mesdoc.getLength(), s, univ);
+				StyleConstants.setForeground(univ, Color.BLACK);
 			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();

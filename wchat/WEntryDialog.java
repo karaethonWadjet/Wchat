@@ -97,6 +97,12 @@ public class WEntryDialog extends JFrame implements ItemListener {
 
 		ip.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "send");
 		ip.getActionMap().put("send", sendo);
+		
+		paunch.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "send");
+		paunch.getActionMap().put("send", sendo);
+		
+		name.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "send");
+		name.getActionMap().put("send", sendo);
 		add(on);
 
 		// check if login information was saved
