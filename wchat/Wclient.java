@@ -175,6 +175,9 @@ public class Wclient extends JFrame implements ActionListener, Runnable {
 
 			userlist.setLayout(new BoxLayout(userlist, BoxLayout.Y_AXIS));
 			userlist.add(users);
+			//userlist.setAlignmentX(CENTER_ALIGNMENT);
+			//userlist.setAlignmentY(CENTER_ALIGNMENT); 
+			userlist.setMaximumSize(new Dimension(200,4000));
 			userlist.setBorder(t);
 
 			areas.setLayout(new BoxLayout(areas, BoxLayout.X_AXIS));
